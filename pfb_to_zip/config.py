@@ -1,0 +1,46 @@
+data_dictionary = "https://portal.pedscommons.org/api/v0/submission/_dictionary/_all"
+
+exclude_files = ['program', 'project']
+
+white_list = {}
+white_list["person"] = ["type", "submitter_id", "sex", "race", "ethnicity"]
+white_list["subject"] = ["type", "submitter_id", "honest_broker_subject_id", "consortium", "data_contributor_id", "persons.submitter_id"]
+white_list["adverse_event"] = ["type", "submitter_id", "adverse_event", "ae_attribution", "ae_code", "ae_grade", "ae_system", "ae_system_version", "age_at_ae", "age_at_ae_resolved", "subjects.submitter_id", "timings.submitter_id"] 
+white_list["disease_characteristic"] = ["type", "submitter_id", "bulk_disease", "BULK_MED_MASS", "bulky_nodal_aggregate", "detection_method", "fever", "med_ratio", "night_sweats", "nodular_splenic", "weight_loss", "subjects.submitter_id", "timings.submitter_id"]
+white_list["function_test"] = ["type", "submitter_id", "age_at", "function_category", "function_result_numeric", "function_result_unit", "function_test", "subjects.submitter_id", "timings.submitter_id"]
+white_list["histology"] = ["type", "submitter_id", "age_at_hist_assessment", "histology", "subjects.submitter_id", "timings.submitter_id"]
+white_list["imaging"] = ["type", "submitter_id", "age_at_imaging",  "imaging_method",  "imaging_result", "subjects.submitter_id", "timings.submitter_id"]
+white_list["lab"] = ["type", "submitter_id", "age_at_lab",  "lab_cat",  "lab_method",  "lab_result_numeric",  "lab_result_unit",  "lab_spec_type",  "lab_test", "subjects.submitter_id", "timings.submitter_id"]
+white_list["lesion_characteristic"] = ["type", "submitter_id", "age_at_lesion_assessment",  "e_extension_site",  "lesion_assessment_review",  "lesion_bulky",  "lesion_laterality",  "lesion_response",  "lesion_site", "subjects.submitter_id", "timings.submitter_id"]
+white_list["non_protocol_therapy"] = ["type", "submitter_id", "npt_sct_type",  "npt_timing",  "npt_type", "subjects.submitter_id", "timings.submitter_id"]
+white_list["off_protocol_therapy_study"] = ["type", "submitter_id", "age_off",  "another_study",  "off_type",  "reason_off", "subjects.submitter_id", "timings.submitter_id"]
+white_list["radiation_therapy"] = ["type", "submitter_id", "age_at_rt_end",  "age_at_rt_start",  "energy_type",  "rt_dose",  "rt_laterality",  "rt_site",  "rt_unit", "subjects.submitter_id", "timings.submitter_id"]
+white_list["secondary_malignant_neoplasm"] = ["type", "submitter_id", "age_at_smn",  "smn_morph_icdo",  "smn_top_icdo", "subjects.submitter_id"] 
+white_list["staging"] = ["type", "submitter_id", "AB", "age_at_staging", "E", "S", "stage", "stage_system", "subjects.submitter_id", "timings.submitter_id"] 
+white_list["stem_cell_transplant"] = ["type", "submitter_id", "age_at_sct", "sct_cd34_coll", "sct_conditioning_type", "sct_source", "sct_type", "subjects.submitter_id", "timings.submitter_id"] 
+white_list["study"] = ["type", "submitter_id", "study_id", "subjects.submitter_id", "treatment_arm", "age_at_enrollment"]
+white_list["subject_response"] = ["type", "submitter_id", "age_at_response", "interim_response", "nodular_splenic", "palpable_nodes", "response", "response_category", "response_method", "symptoms", "subjects.submitter_id", "timings.submitter_id"]
+white_list["survival_characteristic"] = ["type", "submitter_id", "age_at_lkss", "age_lost_to_follow_up", "cause_of_death", "cause_of_death_detail", "cause_of_death_ranking", "lkss", "lkss_with_disease", "TRM_type", "subjects.submitter_id", "timings.submitter_id"]
+white_list["timing"] = ["type", "submitter_id", "age_at_course_end", "age_at_course_start", "age_at_disease_phase", "course", "course_number", "disease_phase", "disease_phase_number", "timing_type", "year_at_disease_phase", "subjects.submitter_id"]
+white_list["vital"] = ["type", "submitter_id", "age_at_vitals", "vitals_result_numeric", "vitals_result_unit", "vitals_test", "subjects.submitter_id", "timings.submitter_id"] 
+
+
+
+black_list = {}
+black_list["person"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "projects.id", "projects.submitter_id"]
+black_list["subject"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "persons.id"]
+black_list["medical_history"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id"]
+black_list["timing"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id"]
+black_list["biopsy_surgical_procedure"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id", "timings.id"]
+black_list["histology"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id", "timings.id"]
+black_list["molecular_analysis"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id", "timings.id"]
+black_list["secondary_malignant_neoplasm"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id"]
+black_list["staging"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id", "timings.id"]
+black_list["study"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id"]
+black_list["survival_characteristic"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id", "timings.id"]
+black_list["tumor_assessment"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id", "timings.id"]
+black_list["radiation_therapy"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id", "timings.id"]
+black_list["subject_response"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id", "timings.id"]
+black_list["total_dose"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id", "timings.id"]
+black_list["disease_characteristic"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id", "timings.id"]
+black_list["lab"] = ["project_id", "created_datetime", "updated_datetime", "state", "id", "subjects.id", "timings.id"]

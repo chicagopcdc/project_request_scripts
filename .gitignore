@@ -172,3 +172,8 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+
+pfb_to_zip/outputs
+*.avro
+tsvs/
