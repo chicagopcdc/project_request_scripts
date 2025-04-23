@@ -12,8 +12,7 @@ from git import Repo
 
 from pfb.reader import PFBReader
 from pfb.exporters import tsv
-from dictionaryutils.utils import node_values_to_codes
-
+from dictionaryutils_pcdc.utils import node_values_to_codes
 
 
 class Config():

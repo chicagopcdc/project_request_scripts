@@ -400,7 +400,26 @@ dev = ["flake8", "hypothesis", "ipython", "mypy (>=0.710)", "portray", "pytest (
 
 [[package]]
 name = "dictionaryutils"
-version = "3.4.12"
+version = "3.5.0"
+description = "Python wrapper and metaschema for datadictionary."
+optional = false
+python-versions = "<4,>=3.9"
+groups = ["main"]
+files = [
+    {file = "dictionaryutils-3.5.0-py3-none-any.whl", hash = "sha256:91bbf296dd8141a844d622a349a648cf0e002f816ae635ea0edf6bd627849acb"},
+    {file = "dictionaryutils-3.5.0.tar.gz", hash = "sha256:680118a8fe24f5f512169c85c99334b9a0d9e830d73a70db9b3f55903cab11e6"},
+]
+
+[package.dependencies]
+cdislogging = "*"
+gen3dictionary = ">=2.0.4,<3.0.0"
+jsonschema = "<=4.23.0"
+PyYAML = "*"
+requests = "*"
+
+[[package]]
+name = "dictionaryutils-pcdc"
+version = "4.0.0"
 description = "Python wrapper and metaschema for datadictionary."
 optional = false
 python-versions = ">=3.9, <4"
@@ -420,8 +439,8 @@ requests = "*"
 [package.source]
 type = "git"
 url = "https://github.com/chicagopcdc/dictionaryutils.git"
-reference = "pcdc_dev"
-resolved_reference = "048d15c65e168c8007d87eef0c693b3b17c2bcb5"
+reference = "rename-poetry-project"
+resolved_reference = "c72ce487f0241ef0adc8b1d8f162b72764b27e8e"
 
 [[package]]
 name = "drsclient"
@@ -923,14 +942,14 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 
 [[package]]
 name = "jsonschema-specifications"
-version = "2024.10.1"
+version = "2025.4.1"
 description = "The JSON Schema meta-schemas and vocabularies, exposed as a Registry"
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "jsonschema_specifications-2024.10.1-py3-none-any.whl", hash = "sha256:a09a0680616357d9a0ecf05c12ad234479f549239d0f5b55f3deea67475da9bf"},
-    {file = "jsonschema_specifications-2024.10.1.tar.gz", hash = "sha256:0f38b83639958ce1152d02a7f062902c41c8fd20d558b0c34344292d417ae272"},
+    {file = "jsonschema_specifications-2025.4.1-py3-none-any.whl", hash = "sha256:4653bffbd6584f7de83a67e0d620ef16900b390ddc7939d56684d6c81e33f1af"},
+    {file = "jsonschema_specifications-2025.4.1.tar.gz", hash = "sha256:630159c9f4dbea161a6a2205c3011cc4f18ff381b189fff48bb39b9bf26ae608"},
 ]
 
 [package.dependencies]
@@ -2157,4 +2176,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9.0"
-content-hash = "1248a190f79eae608e6385e54c1207ee30af0baa4eb89cfff542d8e3cbdca4a9"
+content-hash = "6389d7025dbc81f740d44e4af35e0ed87b111da20033b9fdbb200d7e6d2ab38e"
