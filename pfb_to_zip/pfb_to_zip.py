@@ -10,8 +10,8 @@ import csv
 import pandas as pd
 from git import Repo
 
-from pfb.reader import PFBReader
-from pfb.exporters import tsv
+from pfb_pcdc.reader import PFBReader
+from pfb_pcdc.exporters import tsv
 from dictionaryutils_pcdc.utils import node_values_to_codes
 
 

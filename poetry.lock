@@ -440,7 +440,7 @@ requests = "*"
 type = "git"
 url = "https://github.com/chicagopcdc/dictionaryutils.git"
 reference = "rename-poetry-project"
-resolved_reference = "c72ce487f0241ef0adc8b1d8f162b72764b27e8e"
+resolved_reference = "e200e28eee0a48dd3006983296187d14e320b745"
 
 [[package]]
 name = "drsclient"
@@ -779,31 +779,31 @@ test = ["coverage[toml]", "ddt (>=1.1.1,!=1.4.3)", "mock ; python_version < \"3.
 
 [[package]]
 name = "h11"
-version = "0.14.0"
+version = "0.16.0"
 description = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "h11-0.14.0-py3-none-any.whl", hash = "sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761"},
-    {file = "h11-0.14.0.tar.gz", hash = "sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d"},
+    {file = "h11-0.16.0-py3-none-any.whl", hash = "sha256:63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86"},
+    {file = "h11-0.16.0.tar.gz", hash = "sha256:4e35b956cf45792e4caa5885e69fba00bdbc6ffafbfa020300e549b208ee5ff1"},
 ]
 
 [[package]]
 name = "httpcore"
-version = "1.0.8"
+version = "1.0.9"
 description = "A minimal low-level HTTP client."
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "httpcore-1.0.8-py3-none-any.whl", hash = "sha256:5254cf149bcb5f75e9d1b2b9f729ea4a4b883d1ad7379fc632b727cec23674be"},
-    {file = "httpcore-1.0.8.tar.gz", hash = "sha256:86e94505ed24ea06514883fd44d2bc02d90e77e7979c8eb71b90f41d364a1bad"},
+    {file = "httpcore-1.0.9-py3-none-any.whl", hash = "sha256:2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55"},
+    {file = "httpcore-1.0.9.tar.gz", hash = "sha256:6e34463af53fd2ab5d807f399a9b45ea31c3dfa2276f15a2c3f00afff6e176e8"},
 ]
 
 [package.dependencies]
 certifi = "*"
-h11 = ">=0.13,<0.15"
+h11 = ">=0.16"
 
 [package.extras]
 asyncio = ["anyio (>=4.0,<5.0)"]
@@ -1479,7 +1479,30 @@ files = [
 
 [[package]]
 name = "pypfb"
-version = "0.5.32"
+version = "0.5.30"
+description = "Python SDK for PFB format"
+optional = false
+python-versions = "<4,>=3.9"
+groups = ["main"]
+files = [
+    {file = "pypfb-0.5.30-py3-none-any.whl", hash = "sha256:0a9c45b927e446fe4ffda59aeba0391af7bfe21b21def9960cf382efb0f79a0d"},
+    {file = "pypfb-0.5.30.tar.gz", hash = "sha256:7bcb16444898246bf445b5efad5c672af8d23a7a5dcfeeaca1ac13c40d502175"},
+]
+
+[package.dependencies]
+aiohttp = ">=3.6.3,<4.0.0"
+click = ">=8.1.7,<9.0.0"
+dictionaryutils = ">=3.4.8,<4.0.0"
+fastavro = ">=1.8.2,<1.9.0"
+gen3 = ">=4.11.3,<5.0.0"
+gen3dictionary = ">=2.0.3"
+importlib_metadata = {version = ">=3.6.0", markers = "python_full_version <= \"3.9.0\""}
+python-json-logger = ">=2.0.0"
+PyYAML = ">=6.0.1,<7.0.0"
+
+[[package]]
+name = "pypfb-pcdc"
+version = "1.0.0"
 description = "Python SDK for PFB format"
 optional = false
 python-versions = ">=3.9, <4"
@@ -1500,9 +1523,9 @@ PyYAML = "^6.0.1"
 
 [package.source]
 type = "git"
-url = "https://github.com/chicagopcdc/pypfb.git"
-reference = "0.2.3"
-resolved_reference = "af506b7781ca0b247120a763efdf95b78154b529"
+url = "https://github.com/paulmurdoch19/pypfb.git"
+reference = "rename-poetry-project"
+resolved_reference = "59997217b7253053a44959f5016b1a1822f44d06"
 
 [[package]]
 name = "pyreadline3"
@@ -2176,4 +2199,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9.0"
-content-hash = "c3b1f6dfd2eadefb4dd46a42f4e24c5fefccf3a0073506f617fd9fb0c74205f6"
+content-hash = "ed93bacee36968e2d28fc64a3284e0c28a241839b959e3e2758dcd583b8b2756"
