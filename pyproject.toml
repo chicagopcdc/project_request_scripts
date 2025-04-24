@@ -10,15 +10,15 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.9.0"
-gen3 = "^4.26.1"
 requests = "^2.32.3"
-pytest-shutil = "^1.8.1"
 gitpython = "^3.1.44"
 dictionaryutils-pcdc = {git = "https://github.com/chicagopcdc/dictionaryutils.git", rev = "rename-poetry-project"}
 pypfb = {git = "https://github.com/chicagopcdc/pypfb.git", rev = "0.2.3"}
+pandas = "^2.2.3"
 
 
 [tool.poetry.dev-dependencies]
+pytest-shutil = "^1.8.1"
 
 [build-system]
 requires = ["poetry>=1.2.0"]
