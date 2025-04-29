@@ -28,6 +28,7 @@ class PFBExporter:
         self.output_path = output_path if output_path else "./"
         self.ontology = ontology
         self.analysis_path = extra_analysis
+        self.zip_file_output_path = None
 
         # Retrieve config file module
         path, file = config_file_path.rsplit('/', 1)
@@ -268,8 +269,9 @@ class PFBExporter:
 
         # output_filename = self.pfb_file_path
         output_filename = self.output_path + self.zip_folder.split("/")[-1]
-        dir_name = self.zip_folder
-        make_archive(output_filename, 'zip', self.tmp_folder, self.zip_subfolder)
+        self.zip_file_output_path = make_archive(output_filename, 'zip', self.tmp_folder, self.zip_subfolder)
+        print(f"ZIP file created at {self.zip_file_output_path}")
+
 
 
     def clean_up(self):
