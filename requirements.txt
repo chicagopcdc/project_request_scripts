@@ -1,6 +1,6 @@
 requests
 GitPython==3.1.43
 git+https://github.com/chicagopcdc/pypfb@0.2.3#egg=pypfb
-git+https://github.com/chicagopcdc/dictionaryutils@2025.04#egg=dictionaryutils
+git+https://github.com/chicagopcdc/dictionaryutils@2025.05#egg=dictionaryutils
 
 
