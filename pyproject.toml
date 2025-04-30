@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "project-request-scripts"
+version = "0.1.0"
+description = ""
+authors = []
+readme = "README.md"
+packages = [
+    { include = "pfb_to_zip" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.9.0"
+requests = "*"
+gitpython = "^3.1.44"
+dictionaryutils = {git = "https://github.com/chicagopcdc/dictionaryutils.git", rev = "2025.05"}
+pypfb = {git = "https://github.com/chicagopcdc/pypfb.git", rev = "0.2.3"}
+
+
+[poetry.group.dev.dependencies]
+
+[build-system]
+requires = ["poetry>=1.2.0"]
+build-backend = "poetry.core.masonry.api"
