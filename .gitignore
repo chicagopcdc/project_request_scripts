@@ -177,3 +177,5 @@ cython_debug/
 pfb_to_zip/outputs
 *.avro
 tsvs/
+
+.DS_Store

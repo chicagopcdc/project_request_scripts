@@ -2,11 +2,12 @@ import argparse
 import sys
 from importlib import import_module
 from pathlib import Path
-from shutil import rmtree, make_archive, copy
-import requests
 import os
 import subprocess
 import csv
+from shutil import rmtree, make_archive, copy
+
+import requests
 import pandas as pd
 from git import Repo
 
