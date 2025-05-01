@@ -1,6 +1,6 @@
 data_dictionary = "https://portal.pedscommons.org/api/v0/submission/_dictionary/_all"
 
-exclude_files = ['program', 'project']
+exclude_files = ['program', 'project', 'external_reference', 'biospecimen']
 
 white_list = {}
 white_list["person"] = ["type", "submitter_id", "sex", "race", "ethnicity"]
@@ -9,18 +9,17 @@ white_list["medical_history"] = ["type", "submitter_id", "medical_history", "med
 white_list["timing"] = ["type", "submitter_id", "timing_type", "disease_phase", "course", "disease_phase_number", "age_at_disease_phase", "year_at_disease_phase", "subjects.submitter_id"]
 white_list["biopsy_surgical_procedure"] = ["type", "submitter_id", "age_at_procedure", "tumor_classification", "procedure_site", "procedure_type", "margins", "subjects.submitter_id", "timings.submitter_id"]
 white_list["histology"] = ["type", "submitter_id" ,"age_at_hist_assessment", "histology", "histology_grade", "histology_inpc", "subjects.submitter_id", "timings.submitter_id"] 
-white_list["molecular_analysis"] = ["type", "submitter_id", "age_at_molecular_analysis", "molecular_abnormality", "gene1", "gene2", "molecular_abnormality_result", "anaplasia", "anaplasia_extent", "dna_index", "subjects.submitter_id", "timings.submitter_id"] 
+white_list["molecular_analysis"] = ["type", "submitter_id", "age_at_molecular_analysis", "molecular_abnormality", "gene1", "gene2", "molecular_abnormality_result", "dna_index", "subjects.submitter_id", "timings.submitter_id"] 
 white_list["secondary_malignant_neoplasm"] = ["type", "submitter_id", "age_at_smn", "smn_morph_sno", "smn_morph_icdo", "smn_morph_txt", "smn_top_sno", "smn_top_icdo", "smn_top_txt", "smn_yn", "subjects.submitter_id"]
-white_list["staging"] = ["type", "submitter_id", "age_at_staging", "tnm_finding", "irs_group", "stage_system", "stage", "subjects.submitter_id", "timings.submitter_id"] 
+white_list["staging"] = ["type", "submitter_id", "age_at_staging", "stage_system", "stage", "subjects.submitter_id", "timings.submitter_id"] 
 white_list["study"] = ["type", "submitter_id", "study_id", "subjects.submitter_id", "treatment_arm"]
 white_list["survival_characteristic"] = ["type", "submitter_id", "age_at_lkss", "lkss", "cause_of_death", "cause_of_death_other", "subjects.submitter_id", "timings.submitter_id"]
-white_list["tumor_assessment"] = ["type", "submitter_id", "age_at_tumor_assessment", "tumor_classification", "tumor_site", "tumor_site_other", "tumor_state", "longest_diam_dim1", "longest_diam_dim2", "longest_diam_dim3", "tumor_size", "invasiveness", "nodal_pathology", "nodal_clinical", "parameningeal_extension", "subjects.submitter_id", "timings.submitter_id"]
+white_list["tumor_assessment"] = ["type", "submitter_id", "age_at_tumor_assessment", "tumor_classification", "tumor_site", "tumor_site_other", "tumor_state", "subjects.submitter_id", "timings.submitter_id"]
 white_list["radiation_therapy"] = ["type", "submitter_id", "age_at_rt_start", "age_at_rt_end", "tumor_classification", "rt_tissue_type", "rt_site", "rt_laterality", "energy_type", "rt_dose", "rt_unit", "boost", "boost_dose", "num_fraction", "transposition_organ", "administration_status", "rt_timing", "subjects.submitter_id", "timings.submitter_id"]
-white_list["subject_response"] = ["type", "submitter_id", "age_at_response", "response_category", "tx_prior_response", "interim_response", "response", "response_method", "response_criteria", "response_criteria_version", "necrosis", "necrosis_pct", "bm_pct_blasts_at_response", "bm_analysis_method_at_response", "anc_at_response", "anc_threshold_at_response", "platelet_count_at_response", "platelet_threshold_at_response", "symptoms", "palpable_nodes", "nodular_splenic", "subjects.submitter_id", "timings.submitter_id"]
+white_list["subject_response"] = ["type", "submitter_id", "age_at_response", "response_category", "tx_prior_response", "interim_response", "response", "response_method", "response_criteria", "response_criteria_version", "necrosis", "necrosis_pct", "bm_pct_blasts_at_response", "bm_analysis_method_at_response", "anc_at_response", "anc_threshold_at_response", "platelet_count_at_response", "platelet_threshold_at_response", "symptoms", "palpable_nodes", "subjects.submitter_id", "timings.submitter_id"]
 white_list["total_dose"] = ["type", "submitter_id", "age_at_total_dose_start", "age_at_total_dose_end", "cycle_number", "route", "route_detail", "antineoplastic_agent", "number_doses", "total_dose_administered", "normalization_basis", "total_dose_intended", "total_dose_units", "administration_status", "subjects.submitter_id", "timings.submitter_id"]
-white_list["disease_characteristic"] = ["type", "submitter_id", "fab_type", "who_aml", "all_type", "igccc_risk_group", "magic_risk_group", "mki", "disease_site", "detection_method", "CNS_disease_status", "CNS_disease_status_detail", "lansky", "karnofsky", "GPOH_score", "MPAL", "MLDS", "TAMDS", "secondary_AML", "prior_steroids_week", "prior_steroids_month", "e_lesions", "bulk_disease", "bulky_nodal_aggregate", "BULK_MED_MASS", "med_ratio", "B_systems", "fever", "night_sweats", "weight_loss", "nodular_splenic", "initial_treatment_category", "subjects.submitter_id", "timings.submitter_id"]
-white_list["lab"] = ["type", "submitter_id", "age_at_lab", "lab_cat", "lab_test", "lab_spec_type", "lab_result", "lab_result_numeric", "lab_result_unit", "lab_method", "lab_seq_method", "threshold_high", "threshold_low", "pmid_ref", "bm_morphology", "traumatic_tap", "subjects.submitter_id", "timings.submitter_id"]
-white_list["external_reference"] = []
+white_list["disease_characteristic"] = ["type", "submitter_id", "mki", "nodular_splenic", "initial_treatment_category", "subjects.submitter_id", "timings.submitter_id"]
+white_list["lab"] = ["type", "submitter_id", "age_at_lab", "lab_test", "lab_result", "lab_result_numeric", "lab_result_unit", "subjects.submitter_id", "timings.submitter_id"]
 		
 
 
