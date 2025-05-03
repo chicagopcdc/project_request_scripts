@@ -123,7 +123,7 @@ class PFBExporter:
             if not tmp_path.exists():
                 tmp_path.mkdir()
 
-            tmp_path = os.path.join("./", "repo")
+            tmp_path = os.path.join(self.tmp_folder, "/repo")
             if Path(tmp_path).exists():
                 rmtree(tmp_path, ignore_errors=False, onerror=None)
 
