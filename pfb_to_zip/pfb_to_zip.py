@@ -246,13 +246,18 @@ class PFBExporter:
             return
 
         # TODO check R is installed
+        #check if R is installed
         try:
-            command = 'which RScript'
-            cmd_output = subprocess.check_output(command, shell=True, text=True).rstrip('\n')
+            cmd_output = subprocess.check_output('which Rscript', shell=True, text=True).rstrip('\n')
         except subprocess.CalledProcessError as grepexc:
             print("error code", grepexc.returncode, grepexc.output)
-            print("R is not installed / not found!")
-            return
+            print("Rscript is not installed or found in Path!")
+            try:
+                cmd_output = subprocess.check_output('which RScript', shell=True, text=True).rstrip('\n')
+            except subprocess.CalledProcessError as grepexc:
+                print("error code", grepexc.returncode, grepexc.output)
+                print("R is not installed / not found!")
+                return
 
         current_dir = str(Path( __file__ ).parent.absolute())
         # subprocess.call(cmd_output + " --vanilla ./repo/INRG/PCDC_To_INRG_Data_Transformation.R", shell=True)
