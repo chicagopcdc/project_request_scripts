@@ -13,7 +13,7 @@ python = "^3.9.0"
 requests = "*"
 gitpython = "^3.1.44"
 dictionaryutils = {git = "https://github.com/chicagopcdc/dictionaryutils.git", rev = "2025.05"}
-pypfb = {git = "https://github.com/chicagopcdc/pypfb.git", rev = "0.2.3"}
+pypfb = {git = "https://github.com/chicagopcdc/pypfb.git", rev = "0.5.33"}
 
 
 [poetry.group.dev.dependencies]
