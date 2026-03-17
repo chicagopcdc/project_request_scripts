@@ -2,18 +2,19 @@ import requests
 import json
 
 ## Config env related
-presigned_url_api = "https://portal.pedscommons.org/amanuensis/admin/upload-file"
-s3_bucket = "pcdc-prod-data-release-bucket"
+# env = "staging"
+env = "prod"
 access_token = "YOUR_ACCESS_TOKEN"
+project_id = 17
+file_name = '20260317_inrg_2024_02.zip'
 
 
-## Config request related
-# File to upload
-project_id = 16
-file_name = '20250115_INSTRuCT_2022-09.zip'
 file_path = './outputs/' + file_name
-
-
+if env == "prod":
+    presigned_url_api = "https://portal.pedscommons.org/amanuensis/admin/upload-file"
+else:
+    presigned_url_api = f"https://portal-{env}.pedscommons.org/amanuensis/admin/upload-file"
+s3_bucket = f"pcdc-{env}-data-release-bucket"
 
 payload = json.dumps({
   "bucket": s3_bucket,
