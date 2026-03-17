@@ -20,7 +20,7 @@ white_list["subject_response"] = ["type", "submitter_id", "age_at_response", "re
 white_list["total_dose"] = ["type", "submitter_id", "age_at_total_dose_start", "age_at_total_dose_end", "cycle_number", "route", "route_detail", "antineoplastic_agent", "number_doses", "total_dose_administered", "normalization_basis", "total_dose_intended", "total_dose_units", "administration_status", "subjects.submitter_id", "timings.submitter_id"]
 white_list["disease_characteristic"] = ["type", "submitter_id", "mki", "nodular_splenic", "initial_treatment_category", "subjects.submitter_id", "timings.submitter_id"]
 white_list["lab"] = ["type", "submitter_id", "age_at_lab", "lab_test", "lab_result", "lab_result_numeric", "lab_result_unit", "subjects.submitter_id", "timings.submitter_id"]
-		
+white_list["external_reference"] = ["type", "subjects.submitter_id", "external_resource_name", "external_subject_id", "external_subject_submitter_id", "external_subject_url"]
 
 
 
