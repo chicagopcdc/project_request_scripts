@@ -1,6 +1,6 @@
 data_dictionary = "https://portal.pedscommons.org/api/v0/submission/_dictionary/_all"
 
-exclude_files = ['program', 'project', 'external_reference', 'biospecimen']
+exclude_files = ['program', 'project', 'biospecimen']
 
 white_list = {}
 white_list["person"] = ["type", "submitter_id", "sex", "race", "ethnicity"]
