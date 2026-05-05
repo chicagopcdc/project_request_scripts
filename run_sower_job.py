@@ -122,10 +122,7 @@ def build_export_input(subject_submitter_id_list=None, export_filter=None):
     # Support either:
     # 1. full wrapper: {"filter": {...}}
     # 2. raw filter body: {...}
-    if "filter" in export_filter:
-        return export_filter
-
-    return {"filter": export_filter}
+    return export_filter
 
 
 def run_export_job(base_url, headers, subject_submitter_id_list=None, export_filter=None):
@@ -211,7 +208,6 @@ if __name__ == "__main__":
     # export_filter = None
 
     export_filter = {
-      "filter": {
         "AND": [
           {
             "IN": {
@@ -318,7 +314,6 @@ if __name__ == "__main__":
             }
           }
         ]
-      }
     }
 
 
