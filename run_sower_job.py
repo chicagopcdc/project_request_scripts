@@ -105,7 +105,7 @@ def build_export_input(subject_submitter_id_list=None, export_filter=None):
             raise ValueError("`subject_submitter_id_list` must be a non-empty list.")
 
         return {
-            "filter": {
+
                 "AND": [
                     {
                         "IN": {
@@ -114,7 +114,6 @@ def build_export_input(subject_submitter_id_list=None, export_filter=None):
                     }
                 ]
             }
-        }
 
     if not isinstance(export_filter, dict):
         raise ValueError("`export_filter` must be a dictionary.")
@@ -130,10 +129,10 @@ def run_export_job(base_url, headers, subject_submitter_id_list=None, export_fil
 
     payload = {
         "action": "export",
-        "input": build_export_input(
+        "input": {"filter": build_export_input(
             subject_submitter_id_list=subject_submitter_id_list,
             export_filter=export_filter,
-        ),
+        )},
     }
 
     response = requests.post(url, headers=headers, json=payload)
@@ -185,10 +184,10 @@ if __name__ == "__main__":
 
     # If skip_create_filterset if False please update the following values.
     user_email = "lgraglia@uchicago.edu"
-    filterset_name = "INSTRuCT 2026-02-01"
+    filterset_name = "INSTRuCT 2026-02-07"
     filterset_description = ""
-    project_name = "20260421_2"
-    project_code = "INSTRuCT 2026-02-01"
+    project_name = "20260421_7"
+    project_code = "INSTRuCT 2026-02-07"
     project_institution = "luca institution"
     
     # ------------------------------------------------------------------
