@@ -153,12 +153,21 @@ def get_job_status(base_url, headers, job_uid):
 
     if response.status_code != 200:
         print("Error getting job status")
+        print(f"Status code: {response.status_code}")
         print(response.text)
-        raise RuntimeError("Failed to get job status")
+        return False
 
-    data = response.json()
-    print(f"Job status: {data['status']}")
-    return data["status"] == "Completed"
+    try:
+        data = response.json()
+    except requests.exceptions.JSONDecodeError:
+        print("Failed to decode JSON from job status response")
+        print("Raw response:")
+        print(response.text)
+        return False
+
+    print(f"Job status: {data.get('status')}")
+
+    return data.get("status") == "Completed"
 
 
 def get_job_output(base_url, headers, job_uid):
@@ -175,20 +184,20 @@ def get_job_output(base_url, headers, job_uid):
 
 
 if __name__ == "__main__":
-    base_url = "https://portal-staging.pedscommons.org"
+    base_url = "https://portal.pedscommons.org"
     access_token = "ACCESS_TOKEN"
     
     skip_create_filterset = False
     local_file_path = "./pfb_to_zip/"
-    file_name = "20260420_instruct_2026-02.avro"
+    file_name = "20260513_interact_2026_01.avro"
 
     # If skip_create_filterset if False please update the following values.
-    user_email = "lgraglia@uchicago.edu"
-    filterset_name = "INSTRuCT 2026-02-07"
+    user_email = "stanley.pounds@stjude.org"
+    filterset_name = "INTERACT 2026-01"
     filterset_description = ""
-    project_name = "20260421_7"
-    project_code = "INSTRuCT 2026-02-07"
-    project_institution = "luca institution"
+    project_name = "International large-scale clinical and genetic study of congenital and infant acute myeloid leukemia"
+    project_code = "INTERACT 2026-01"
+    project_institution = "St Jude"
     
     # ------------------------------------------------------------------
     # OPTION 1: Export by list of IDs
@@ -209,15 +218,8 @@ if __name__ == "__main__":
     export_filter = {
         "AND": [
           {
-            "IN": {
-              "consortium": [
-                "INSTRuCT"
-              ]
-            }
-          },
-          {
             "nested": {
-              "path": "histologies",
+              "path": "timings",
               "AND": [
                 {
                   "AND": [
@@ -229,38 +231,8 @@ if __name__ == "__main__":
                       }
                     },
                     {
-                      "AND": [
-                        {
-                          "IN": {
-                            "histology": [
-                              "Alveolar rhabdomyosarcoma (ARMS)",
-                              "Botryoid rhabdomyosarcoma (BRMS)",
-                              "Embryonal rhabdomyosarcoma (ERMS)",
-                              "Pleomorphic rhabdomyosarcoma (PRMS)",
-                              "Rhabdomyosarcoma (RMS), not classifiable",
-                              "Rhabdomyosarcoma (RMS), with Mixed Embryonal and Alveolar Features",
-                              "Spindle cell"
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          },
-          {
-            "nested": {
-              "path": "stagings",
-              "AND": [
-                {
-                  "AND": [
-                    {
-                      "IN": {
-                        "disease_phase": [
-                          "Initial Diagnosis"
-                        ]
+                      "EQ": {
+                        "disease_phase_number": 1
                       }
                     },
                     {
@@ -268,8 +240,31 @@ if __name__ == "__main__":
                         {
                           "AND": [
                             {
-                              "!=": {
-                                "tnm_finding": "Metastases, M1"
+                              "GTE": {
+                                "age_at_disease_phase": 0
+                              }
+                            },
+                            {
+                              "LTE": {
+                                "age_at_disease_phase": 730.5
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "AND": [
+                        {
+                          "AND": [
+                            {
+                              "GTE": {
+                                "year_at_disease_phase": 2000
+                              }
+                            },
+                            {
+                              "LTE": {
+                                "year_at_disease_phase": 2025
                               }
                             }
                           ]
@@ -282,38 +277,14 @@ if __name__ == "__main__":
             }
           },
           {
-            "nested": {
-              "path": "tumor_assessments",
-              "AND": [
-                {
-                  "AND": [
-                    {
-                      "IN": {
-                        "disease_phase": [
-                          "Relapse",
-                          "Progression",
-                          "Relapse/Progression"
-                        ]
-                      }
-                    },
-                    {
-                      "AND": [
-                        {
-                          "IN": {
-                            "tumor_state": [
-                              "Present"
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                }
+            "IN": {
+              "consortium": [
+                "INTERACT"
               ]
             }
           }
         ]
-    }
+      }
 
 
 
@@ -347,7 +318,6 @@ if __name__ == "__main__":
         )
         print("project created")
         print(project)
-    exit()
 
 
 
@@ -364,6 +334,10 @@ if __name__ == "__main__":
     except ValueError as e:
         print(f"Invalid input: {e}")
         raise SystemExit(1)
+    except Exception as e:
+        print(f"Unexpected error starting export job: {e}")
+        raise
+
 
     if not job_uid:
         raise SystemExit(1)
