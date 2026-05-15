@@ -122,8 +122,7 @@ class PFBExporter:
             tmp_path = Path(self.analysis_path + "/analysis")
             if not tmp_path.exists():
                 tmp_path.mkdir()
-
-            tmp_path = os.path.join("./", "repo")
+            tmp_path = os.path.join(self.tmp_folder, "repo")
             if Path(tmp_path).exists():
                 rmtree(tmp_path, ignore_errors=False, onerror=None)
 
@@ -247,18 +246,22 @@ class PFBExporter:
             return
 
         # TODO check R is installed
+        #check if R is installed
         try:
-            command = 'which RScript'
-            cmd_output = subprocess.check_output(command, shell=True, text=True).rstrip('\n')
+            cmd_output = subprocess.check_output('which Rscript', shell=True, text=True).rstrip('\n')
         except subprocess.CalledProcessError as grepexc:
             print("error code", grepexc.returncode, grepexc.output)
-            print("R is not installed / not found!")
-            return
+            print("Rscript is not installed or found in Path!")
+            try:
+                cmd_output = subprocess.check_output('which RScript', shell=True, text=True).rstrip('\n')
+            except subprocess.CalledProcessError as grepexc:
+                print("error code", grepexc.returncode, grepexc.output)
+                print("R is not installed / not found!")
+                return
 
         current_dir = str(Path( __file__ ).parent.absolute())
         # subprocess.call(cmd_output + " --vanilla ./repo/INRG/PCDC_To_INRG_Data_Transformation.R", shell=True)
-        subprocess.call ([cmd_output, "--vanilla", "./repo/INRG/PCDC_To_INRG_Data_Transformation.R", os.path.join(current_dir, "repo/"), self.analysis_path + "/tsvs/", self.analysis_path + "/analysis/"])
-
+        subprocess.call ([cmd_output, "--vanilla", f"{self.tmp_folder}/repo/INRG/PCDC_To_INRG_Data_Transformation.R", os.path.join(self.tmp_folder, "repo/"), self.analysis_path + "/tsvs/", self.analysis_path + "/analysis/"])
 
         # TODO cd to consortia subfolder
         # TODO run the script with the input and output parameters
