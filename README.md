@@ -8,3 +8,4 @@ This repo contains the scripts used to prepare the data for approved project req
 5. Call the Amanuensis API endpoint to update the project approved_url
 
 Point 1 could be part of amanuensis or a job triggered by amanuensis on request state change to `Approved`.
+
