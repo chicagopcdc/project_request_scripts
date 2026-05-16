@@ -3,9 +3,10 @@ import sys
 from importlib import import_module
 from pathlib import Path
 import os
+import re
 import subprocess
 import csv
-from shutil import rmtree, make_archive, copy
+from shutil import rmtree, make_archive, copy, copytree
 
 import requests
 import pandas as pd
@@ -15,6 +16,12 @@ from pfb.reader import PFBReader
 from pfb.exporters import tsv
 from dictionaryutils.utils import node_values_to_codes
 
+
+def to_folder_name(value: str) -> str:
+    value = value.lower()
+    value = re.sub(r"[^a-z0-9]+", "_", value)
+    value = value.strip("_")
+    return value
 
 
 class Config():
@@ -265,6 +272,41 @@ class PFBExporter:
         return None
    
 
+    def add_external_references_material(self):
+        external_references_path = self.zip_folder + "/tsvs/external_reference.tsv"
+        resources_set = set()
+
+        if Path(external_references_path).exists():
+            with open(external_references_path, "r", encoding="utf-8") as f_read:
+                reader = csv.reader(f_read, delimiter="\t")
+                header = next(reader)
+
+                # find column index
+                try:
+                    idx = header.index("external_resource_name")
+                except ValueError:
+                    print("external_resource_name column not found")
+                    return
+
+                for row in reader:
+                    if len(row) > idx and row[idx]:
+                        resources_set.add(row[idx])
+
+        if resources_set:
+            tmp_path = Path(self.zip_folder) / "external_references_information"
+            tmp_path.mkdir(exist_ok=True)
+
+            for item in resources_set:
+                item_normalized = to_folder_name(item)
+                src = Path("templates") / item_normalized
+                dst = tmp_path / item_normalized
+
+                if src.exists():
+                    copytree(src, dst, dirs_exist_ok=True)
+                else:
+                    print(f"Template not found: {src}")
+
+
     def zip(self):
         # Clean pre-filtered TSVs
         rmtree(self.zip_folder + "/tsvs_original", ignore_errors=False, onerror=None)
@@ -330,6 +372,7 @@ def main():
     # pfb_export.filter_attributes(is_black_list=True)
     pfb_export.setup_and_run_analysis(analysis_script_consortia) #TODO how to find consortium
     pfb_export.to_ontology_code() 
+    pfb_export.add_external_references_material()
     pfb_export.zip()
     pfb_export.clean_up()
 
