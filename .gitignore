@@ -182,3 +182,8 @@ tsvs/
 
 
 .python-version
+idc_index.json
+idc_index_records.json
+idc_index_table.json
+idc_index_selection.json
+pfb_to_zip/templates/imaging_data_commons/src/files
