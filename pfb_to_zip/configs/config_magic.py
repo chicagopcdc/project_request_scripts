@@ -1,0 +1,27 @@
+data_dictionary = "https://portal.pedscommons.org/api/v0/submission/_dictionary/_all"
+
+exclude_files = ['program', 'project']
+
+white_list = {}
+white_list["person"] = ["type", "submitter_id", "ethnicity", "race", "sex"]
+white_list["subject"] = ["type", "submitter_id", "age_at_censor_status", "censor_status", "honest_broker_subject_id", "persons.submitter_id"]
+white_list["medical_history"] = ["type", "submitter_id", "medical_history", "medical_history_status", "subjects.submitter_id"]
+white_list["timing"] = ["type", "submitter_id", "age_at_disease_phase", "disease_phase", "disease_phase_number", "timing_type", "year_at_disease_phase", "subjects.submitter_id"]
+white_list["molecular_analysis"] = ["type", "submitter_id", "age_at_molecular_analysis", "karyotype_status", "molecular_abnormality", "molecular_analysis_method", "subjects.submitter_id", "timings.submitter_id"]
+white_list["secondary_malignant_neoplasm"] = ["type", "submitter_id", "age_at_smn", "smn_morph_icdo", "smn_top_icdo", "subjects.submitter_id", "timings.submitter_id"]
+white_list["study"] = ["type", "submitter_id", "age_at_enrollment", "study_id", "treatment_arm", "year_at_enrollment", "subjects.submitter_id"]
+white_list["survival_characteristic"] = ["type", "submitter_id", "age_at_lkss", "cause_of_death", "lkss", "subjects.submitter_id", "timings.submitter_id"]
+white_list["radiation_therapy"] = ["type", "submitter_id", "age_at_rt_end", "age_at_rt_start", "boost", "energy_type", "num_fraction", "rt_dose", "rt_site", "rt_unit", "subjects.submitter_id", "timings.submitter_id"]
+white_list["subject_response"] = ["type", "submitter_id", "age_at_response", "response", "response_category", "response_criteria", "response_criteria_version", "response_method", "subjects.submitter_id", "timings.submitter_id"]
+white_list["disease_characteristic"] = ["type", "submitter_id", "detection_method", "igccc_risk_group", "magic_risk_group", "subjects.submitter_id", "timings.submitter_id"]
+white_list["lab"] = ["type", "submitter_id", "age_at_lab", "lab_cat", "lab_method", "lab_result", "lab_result_numeric", "lab_result_unit", "lab_seq_method", "lab_spec_type", "lab_test", "threshold_high", "threshold_low", "subjects.submitter_id", "timings.submitter_id"]
+white_list["stem_cell_transplant"] = ["type", "submitter_id", "age_at_sct", "subjects.submitter_id", "timings.submitter_id"]
+white_list["vital"] = ["type", "submitter_id", "age_at_vitals", "vitals_result", "vitals_result_numeric", "vitals_result_unit", "vitals_test", "subjects.submitter_id", "timings.submitter_id"]
+white_list["adverse_event"] = ["type", "submitter_id", "adverse_event", "ae_attribution", "ae_code", "ae_grade", "ae_outcome", "ae_system", "ae_system_version", "age_at_ae", "subjects.submitter_id", "timings.submitter_id"]
+white_list["biopsy_surgical_procedure"] = ["type", "submitter_id", "age_at_procedure", "procedure_site", "procedure_type", "margins", "subjects.submitter_id", "timings.submitter_id"]
+white_list["cytology"] = ["type", "submitter_id", "age_at_cytology", "cytology_spec_type", "malignant_cells", "subjects.submitter_id", "timings.submitter_id"]
+white_list["growing_teratoma_syndrome"] = ["type", "submitter_id", "gts_treatment", "subjects.submitter_id", "timings.submitter_id"]
+white_list["histology"] = ["type", "submitter_id", "age_at_hist_assessment", "hist_ICD_O_morph_code", "hist_assessment_review", "histology", "histology_grade", "histology_result", "histology_result_numeric", "histology_result_unit", "mature_glial_implants", "somatic_malignancy_type", "subjects.submitter_id", "timings.submitter_id"]
+white_list["staging"] = ["type", "submitter_id", "age_at_staging", "stage", "stage_system", "subjects.submitter_id", "timings.submitter_id"] 
+white_list["total_dose"] = ["type", "submitter_id", "age_at_total_dose_end", "age_at_total_dose_start", "antineoplastic_agent", "total_dose_administered", "total_dose_units", "subjects.submitter_id", "timings.submitter_id"]
+white_list["tumor_assessment"] = ["type", "submitter_id", "age_at_tumor_assessment", "nodal_involvement", "nodal_site", "tumor_classification", "tumor_detection_method", "tumor_laterality", "tumor_site", "tumor_site_other", "subjects.submitter_id", "timings.submitter_id"]
