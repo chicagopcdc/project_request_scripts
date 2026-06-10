@@ -132,7 +132,7 @@ class PFBExporter:
 
             tmp_path = os.path.join("./", "repo")
             if Path(tmp_path).exists():
-                rmtree(tmp_path, ignore_errors=False, onerror=None)
+                rmtree(tmp_path, ignore_errors=False, onexc=None)
 
             repo = Repo.clone_from("https://github.com/chicagopcdc/pcdc_analysis_scripts.git", tmp_path, branch="main") #self.tmp_folder
 
@@ -148,6 +148,7 @@ class PFBExporter:
         a list of attributes to whitelist, by default, and a black_list
         boolean to indicate if the list of attributes should be blacklisted instead.
         '''
+        invalid_attributes = {}
         attribute_list = self.config.black_list if is_black_list else self.config.white_list
 
         for file in os.listdir(self.zip_folder + "/tsvs_original"):
@@ -163,6 +164,9 @@ class PFBExporter:
                             if attribute not in attribute_list[file.split(".")[0]]
                         ]
                     else:
+                        invalid_attributes[file.split(".")[0]] = [
+                            a for a in attribute_list[file.split(".")[0]] if a not in header
+                        ]
                         filtered_header = [
                             attribute 
                             for attribute in header 
@@ -183,6 +187,8 @@ class PFBExporter:
                 print(file + " NOT FILTERED, no config is present for it.")
                 # just copy it over to the filtered folder
                 copy(self.zip_folder + "/tsvs_original/" + file, self.zip_folder + "/tsvs/" + file)
+        if any(a for a in invalid_attributes.values()):
+            raise RuntimeError(f'Invalid attributes in config: {({k:v for k,v in invalid_attributes.items() if v})}')
 
     
     # TODO not working need to be updated
