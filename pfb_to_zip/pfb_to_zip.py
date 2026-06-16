@@ -338,62 +338,85 @@ class Difference:
         self.new_file = new_file_path
 
     def read_avro(self, file_path):
-        records_by_submitter = {}
-        submitter_ids_list = []
+        records_by_subject = {}
 
         with open(file_path, 'rb') as f:
             with PFBReader(f) as reader:
                 for record in reader:
-                    submitter_id = record['object'].get('submitter_id')
-                    if submitter_id: # program etc. don't have submitter_id
-                        submitter_ids_list.append(submitter_id)
-                        records_by_submitter[submitter_id] = record
+                    obj = record['object']
+                    name = record['name']
 
-        # duplicates check
-        submitter_ids_set = set(submitter_ids_list)
-        if len(submitter_ids_list) != len(submitter_ids_set):
-            print("⚠️ Duplicates found!")
+                    if name == 'subject':
+                        sid = obj.get('submitter_id')
+                    else:
+                        sid = obj.get('subjects.submitter_id')
 
-        return records_by_submitter
+                    if sid:
+                        if sid not in records_by_subject:
+                            records_by_subject[sid] = {}
+                        if name not in records_by_subject[sid]:
+                            records_by_subject[sid][name] = []
+                        records_by_subject[sid][name].append(record)
+
+        return records_by_subject
+
+    # removes created and updated times from data for comparison
+    def _strip_timestamps(self, nodes):
+        stripped = {}
+        for node_name, records in nodes.items():
+            stripped[node_name] = []
+            for r in records:
+                stripped_record = r.copy()
+                obj = r['object'].copy()
+                obj.pop('created_datetime', None)
+                obj.pop('updated_datetime', None)
+                stripped_record['object'] = obj
+                stripped[node_name].append(stripped_record)
+        return stripped
 
     def generate_diff(self, output_path: str):
         old = self.read_avro(self.old_file)
         new = self.read_avro(self.new_file)
 
-        deleted_submitter_ids = set(old.keys()) - set(new.keys())
+        deleted_sids = set(old.keys()) - set(new.keys())
         diff_records = []
         log_lines = []
 
-        if deleted_submitter_ids:
-            msg = f" {len(deleted_submitter_ids)} record(s) removed (consent withdrawn):"
+        if deleted_sids:
+            msg = f"{len(deleted_sids)} subject(s) removed:"
             print(msg)
             log_lines.append(msg)
-            for sid in sorted(deleted_submitter_ids):
+            for sid in sorted(deleted_sids):
                 line = f"   - {sid}"
                 print(line)
                 log_lines.append(line)
+                for records in old[sid].values():
+                    for record in records:
+                        line = f"     - {record['name']}: {record['object']}"
+                        print(line)
+                        log_lines.append(line)
         else:
-            msg = "No records removed."
+            msg = "No subjects removed."
             print(msg)
             log_lines.append(msg)
 
-        for submitter_id, new_record in new.items():
-            if submitter_id not in old:
-                diff_records.append(new_record)
+        for sid, new_nodes in new.items():
+            if sid not in old:
+                for records in new_nodes.values():
+                    diff_records.extend(records)
             else:
-                if new_record['object'] != old[submitter_id]['object']:
-                    diff_records.append(new_record)
+                if self._strip_timestamps(new_nodes) != self._strip_timestamps(old[sid]):
+                    for records in new_nodes.values():
+                        diff_records.extend(records)
 
-        summary = f"\n Total changed/new records in diff: {len(diff_records)}"
+        summary = f"Total changed/new records in diff: {len(diff_records)}"
         print(summary)
         log_lines.append(summary)
 
-        # Save log to markdown
         log_path = output_path.replace('.avro', '_log.md')
         with open(log_path, 'w') as f:
             f.write("# Diff Log\n\n")
             f.write("\n".join(log_lines))
-        print(f"Log saved to {log_path}")
 
         with open(output_path, 'wb') as out_f:
             with PFBWriter(out_f) as writer:
@@ -404,6 +427,57 @@ class Difference:
 
         print(f"Written to {output_path} with {len(diff_records)} records")
 
+    def create_test_diff_avro(self, output_path: str):
+        import copy
+
+        all_records = []
+        modified_count = 0
+        removed_sids = set()
+
+        # Read all records and group by subject
+        records_by_subject = self.read_avro(self.old_file)
+        all_sids = list(records_by_subject.keys())
+
+        # Pick subjects to modify, remove
+        sids_to_modify = all_sids[:3]  # modify first 3 subjects
+        sids_to_remove = all_sids[3:5]  # remove next 2 subjects (simulate consent withdrawal)
+
+        with open(self.old_file, 'rb') as f:
+            with PFBReader(f) as reader:
+                for record in reader:
+                    obj = record['object']
+                    name = record['name']
+
+                    # find which subject this record belongs to
+                    if name == 'subject':
+                        sid = obj.get('submitter_id')
+                    else:
+                        sid = obj.get('subjects.submitter_id')
+
+                    # skip removed subjects entirely
+                    if sid in sids_to_remove:
+                        continue
+
+                    new_record = copy.deepcopy(record)
+
+                    # modify records belonging to selected subjects
+                    if sid in sids_to_modify:
+                        if name == 'subject':
+                            new_record['object']['age_at_censor_status'] = 99.99
+                            modified_count += 1
+
+                    all_records.append(new_record)
+
+        with open(output_path, 'wb') as out_f:
+            with PFBWriter(out_f) as writer:
+                with open(self.old_file, 'rb') as schema_f:
+                    with PFBReader(schema_f) as reader:
+                        writer.copy_schema(reader)
+                writer.write(all_records)
+
+        print(f"Written to {output_path}")
+        print(f"  - {len(sids_to_modify)} subjects modified")
+        print(f"  - {len(sids_to_remove)} subjects removed: {sorted(sids_to_remove)}")
 
 
 def main():
@@ -454,5 +528,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
+    # d = Difference('../ex1.avro', '../ex1.avro')
+    # d.create_test_diff_avro('../ex2.avro')
 
