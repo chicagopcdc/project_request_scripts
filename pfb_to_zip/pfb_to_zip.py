@@ -1,6 +1,4 @@
 import argparse
-import sys
-from importlib import import_module
 from pathlib import Path
 import os
 import re
@@ -15,6 +13,8 @@ from git import Repo
 from pfb.reader import PFBReader
 from pfb.exporters import tsv
 from dictionaryutils.utils import node_values_to_codes
+
+from db_config import get_db_kwargs, load_config, load_config_module
 
 
 def to_folder_name(value: str) -> str:
@@ -31,7 +31,17 @@ class Config():
 
 
 class PFBExporter:
-    def __init__(self, pfb_file_path:str, tmp_folder:str, output_path:str, config_file_path:str, ontology:str=None, extra_analysis:str=None) -> None:
+    def __init__(
+        self,
+        pfb_file_path: str,
+        tmp_folder: str,
+        output_path: str,
+        config_file_path: str,
+        ontology: str = None,
+        extra_analysis: str = None,
+        project_id: int = None,
+        db_kwargs: dict = None,
+    ) -> None:
         self.pfb_file_path = pfb_file_path
         self.tmp_folder = tmp_folder if tmp_folder else "./tmp"
         self.output_path = output_path if output_path else "./"
@@ -39,11 +49,14 @@ class PFBExporter:
         self.analysis_path = extra_analysis
         self.zip_file_output_path = None
 
-        # Retrieve config file module
-        path, file = config_file_path.rsplit('/', 1)
-        file = file[:-3]
-        sys.path.append(path)
-        self.config = import_module(file)
+        fallback_config = load_config_module(config_file_path)
+        if project_id is not None:
+            self.config, self.config_source = load_config(
+                project_id, db_kwargs or get_db_kwargs(), fallback_config
+            )
+        else:
+            self.config = fallback_config
+            self.config_source = "Config source: local file (--project-id not set)"
 
         self.data_dictionary = None
         if self.ontology and self.ontology == "ncit":
@@ -148,7 +161,6 @@ class PFBExporter:
         a list of attributes to whitelist, by default, and a black_list
         boolean to indicate if the list of attributes should be blacklisted instead.
         '''
-        invalid_attributes = {}
         attribute_list = self.config.black_list if is_black_list else self.config.white_list
 
         for file in os.listdir(self.zip_folder + "/tsvs_original"):
@@ -164,9 +176,6 @@ class PFBExporter:
                             if attribute not in attribute_list[file.split(".")[0]]
                         ]
                     else:
-                        invalid_attributes[file.split(".")[0]] = [
-                            a for a in attribute_list[file.split(".")[0]] if a not in header
-                        ]
                         filtered_header = [
                             attribute 
                             for attribute in header 
@@ -187,8 +196,6 @@ class PFBExporter:
                 print(file + " NOT FILTERED, no config is present for it.")
                 # just copy it over to the filtered folder
                 copy(self.zip_folder + "/tsvs_original/" + file, self.zip_folder + "/tsvs/" + file)
-        if any(a for a in invalid_attributes.values()):
-            raise RuntimeError(f'Invalid attributes in config: {({k:v for k,v in invalid_attributes.items() if v})}')
 
     
     # TODO not working need to be updated
@@ -348,7 +355,13 @@ def main():
     # EXAMPLE: python pfb_to_zip.py -i ./export_2023-03-27T02_42_17.avro -o ./outputs/ -c ./config.py -d https://portal.pedscommons.org/api/v0/submission/_dictionary/_all -t ncit
 
     parser = argparse.ArgumentParser(description="Build ZIP bundle for data delivery after project request has been approved")
-    parser.add_argument('-c', '--config', help='The config file')
+    parser.add_argument('-c', '--config', help='Fallback config file (exclude_files, data_dictionary, and white/black lists if DB unavailable)')
+    parser.add_argument('-p', '--project-id', type=int, help='Load white_list and black_list from amanuensis project_datapoints for this project')
+    parser.add_argument('--db-host', default='localhost', help='Amanuensis Postgres host (default: localhost or AMANUENSIS_DB_HOST)')
+    parser.add_argument('--db-port', type=int, default=5432, help='Amanuensis Postgres port (default: 5432 or AMANUENSIS_DB_PORT)')
+    parser.add_argument('--db-name', default='amanuensis_pcdc', help='Amanuensis Postgres database (default: amanuensis_pcdc or AMANUENSIS_DB_NAME)')
+    parser.add_argument('--db-user', default='amanuensis_pcdc', help='Amanuensis Postgres user (default: amanuensis_pcdc or AMANUENSIS_DB_USER)')
+    parser.add_argument('--db-password', default=os.environ.get('AMANUENSIS_DB_PASSWORD'), help='Amanuensis Postgres password (default: AMANUENSIS_DB_PASSWORD env var)')
     parser.add_argument('-i', '--input', help='Input PFB file path')
     parser.add_argument('-o', '--output', help='Output ZIP directory')
     parser.add_argument('-t', '--terminology', help='The ontology you want to transform GEN3 values to.')
@@ -359,6 +372,14 @@ def main():
         input_path = args.input
         output_path = args.output
         config_file = args.config
+        project_id = args.project_id
+        db_kwargs = get_db_kwargs(
+            host=args.db_host,
+            port=args.db_port,
+            dbname=args.db_name,
+            user=args.db_user,
+            password=args.db_password,
+        )
         ontology = args.terminology
         analysis_script_consortia = args.analysis
     except argparse.ArgumentError as err:
@@ -367,7 +388,16 @@ def main():
 
 
     tmp_folder = "./tmp"
-    pfb_export = PFBExporter(input_path, tmp_folder, output_path, config_file, ontology, True if analysis_script_consortia and analysis_script_consortia != "" else False)
+    pfb_export = PFBExporter(
+        input_path,
+        tmp_folder,
+        output_path,
+        config_file,
+        ontology,
+        True if analysis_script_consortia and analysis_script_consortia != "" else False,
+        project_id=project_id,
+        db_kwargs=db_kwargs,
+    )
     if not pfb_export:
         print("One or more problems occurred during the initialization of the PFBExporter class")
         exit()
@@ -381,6 +411,7 @@ def main():
     pfb_export.add_external_references_material()
     pfb_export.zip()
     pfb_export.clean_up()
+    print(pfb_export.config_source)
 
     
 
