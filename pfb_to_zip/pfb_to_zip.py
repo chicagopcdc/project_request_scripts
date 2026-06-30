@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import csv
+import json
 from shutil import rmtree, make_archive, copy, copytree
 
 import requests
@@ -374,6 +375,15 @@ class Difference:
                 stripped[node_name].append(stripped_record)
         return stripped
 
+    def _normalize(self, nodes):
+        normalized = self._strip_timestamps(nodes)
+        for node_name in normalized:
+            normalized[node_name] = sorted(
+                normalized[node_name],
+                key=lambda r: json.dumps(r, sort_keys=True)
+            )
+        return normalized
+
     def generate_diff(self, output_path: str):
         old = self.read_avro(self.old_file)
         new = self.read_avro(self.new_file)
@@ -405,7 +415,7 @@ class Difference:
                 for records in new_nodes.values():
                     diff_records.extend(records)
             else:
-                if self._strip_timestamps(new_nodes) != self._strip_timestamps(old[sid]):
+                if self._normalize(new_nodes) != self._normalize(old[sid]):
                     for records in new_nodes.values():
                         diff_records.extend(records)
 
@@ -426,59 +436,6 @@ class Difference:
                 writer.write(diff_records)
 
         print(f"Written to {output_path} with {len(diff_records)} records")
-
-    def create_test_diff_avro(self, output_path: str):
-        import copy
-
-        all_records = []
-        modified_count = 0
-        removed_sids = set()
-
-        # Read all records and group by subject
-        records_by_subject = self.read_avro(self.old_file)
-        all_sids = list(records_by_subject.keys())
-
-        # Pick subjects to modify, remove
-        sids_to_modify = all_sids[:3]  # modify first 3 subjects
-        sids_to_remove = all_sids[3:5]  # remove next 2 subjects (simulate consent withdrawal)
-
-        with open(self.old_file, 'rb') as f:
-            with PFBReader(f) as reader:
-                for record in reader:
-                    obj = record['object']
-                    name = record['name']
-
-                    # find which subject this record belongs to
-                    if name == 'subject':
-                        sid = obj.get('submitter_id')
-                    else:
-                        sid = obj.get('subjects.submitter_id')
-
-                    # skip removed subjects entirely
-                    if sid in sids_to_remove:
-                        continue
-
-                    new_record = copy.deepcopy(record)
-
-                    # modify records belonging to selected subjects
-                    if sid in sids_to_modify:
-                        if name == 'subject':
-                            new_record['object']['age_at_censor_status'] = 99.99
-                            modified_count += 1
-
-                    all_records.append(new_record)
-
-        with open(output_path, 'wb') as out_f:
-            with PFBWriter(out_f) as writer:
-                with open(self.old_file, 'rb') as schema_f:
-                    with PFBReader(schema_f) as reader:
-                        writer.copy_schema(reader)
-                writer.write(all_records)
-
-        print(f"Written to {output_path}")
-        print(f"  - {len(sids_to_modify)} subjects modified")
-        print(f"  - {len(sids_to_remove)} subjects removed: {sorted(sids_to_remove)}")
-
 
 def main():
     # EXAMPLE: python pfb_to_zip.py -i ./export_2023-03-27T02_42_17.avro -o ./outputs/ -c ./config.py -d https://portal.pedscommons.org/api/v0/submission/_dictionary/_all -t ncit
@@ -528,6 +485,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # d = Difference('../ex1.avro', '../ex1.avro')
-    # d.create_test_diff_avro('../ex2.avro')
 
