@@ -14,7 +14,7 @@ from pfb.reader import PFBReader
 from pfb.exporters import tsv
 from dictionaryutils.utils import node_values_to_codes
 
-from db_config import get_db_kwargs, load_config, load_config_module
+from db_config import get_api_config, load_config, load_config_module
 
 
 def to_folder_name(value: str) -> str:
@@ -40,7 +40,7 @@ class PFBExporter:
         ontology: str = None,
         extra_analysis: str = None,
         project_id: int = None,
-        db_kwargs: dict = None,
+        api_config: dict = None,
     ) -> None:
         self.pfb_file_path = pfb_file_path
         self.tmp_folder = tmp_folder if tmp_folder else "./tmp"
@@ -52,7 +52,7 @@ class PFBExporter:
         fallback_config = load_config_module(config_file_path)
         if project_id is not None:
             self.config, self.config_source = load_config(
-                project_id, db_kwargs or get_db_kwargs(), fallback_config
+                project_id, api_config or get_api_config(), fallback_config
             )
         else:
             self.config = fallback_config
@@ -355,13 +355,10 @@ def main():
     # EXAMPLE: python pfb_to_zip.py -i ./export_2023-03-27T02_42_17.avro -o ./outputs/ -c ./config.py -d https://portal.pedscommons.org/api/v0/submission/_dictionary/_all -t ncit
 
     parser = argparse.ArgumentParser(description="Build ZIP bundle for data delivery after project request has been approved")
-    parser.add_argument('-c', '--config', help='Fallback config file (exclude_files, data_dictionary, and white/black lists if DB unavailable)')
+    parser.add_argument('-c', '--config', help='Fallback config file (exclude_files, data_dictionary, and white/black lists if API unavailable)')
     parser.add_argument('-p', '--project-id', type=int, help='Load white_list and black_list from amanuensis project_datapoints for this project')
-    parser.add_argument('--db-host', default='localhost', help='Amanuensis Postgres host (default: localhost or AMANUENSIS_DB_HOST)')
-    parser.add_argument('--db-port', type=int, default=5432, help='Amanuensis Postgres port (default: 5432 or AMANUENSIS_DB_PORT)')
-    parser.add_argument('--db-name', default='amanuensis_pcdc', help='Amanuensis Postgres database (default: amanuensis_pcdc or AMANUENSIS_DB_NAME)')
-    parser.add_argument('--db-user', default='amanuensis_pcdc', help='Amanuensis Postgres user (default: amanuensis_pcdc or AMANUENSIS_DB_USER)')
-    parser.add_argument('--db-password', default=os.environ.get('AMANUENSIS_DB_PASSWORD'), help='Amanuensis Postgres password (default: AMANUENSIS_DB_PASSWORD env var)')
+    parser.add_argument('--amanuensis-url', default=os.environ.get('AMANUENSIS_URL', 'https://localhost'), help='Portal base URL (default: AMANUENSIS_URL or https://localhost)')
+    parser.add_argument('--access-token', default=os.environ.get('AMANUENSIS_ACCESS_TOKEN'), help='Bearer token with amanuensis access (default: AMANUENSIS_ACCESS_TOKEN env var)')
     parser.add_argument('-i', '--input', help='Input PFB file path')
     parser.add_argument('-o', '--output', help='Output ZIP directory')
     parser.add_argument('-t', '--terminology', help='The ontology you want to transform GEN3 values to.')
@@ -373,12 +370,9 @@ def main():
         output_path = args.output
         config_file = args.config
         project_id = args.project_id
-        db_kwargs = get_db_kwargs(
-            host=args.db_host,
-            port=args.db_port,
-            dbname=args.db_name,
-            user=args.db_user,
-            password=args.db_password,
+        api_config = get_api_config(
+            base_url=args.amanuensis_url,
+            token=args.access_token,
         )
         ontology = args.terminology
         analysis_script_consortia = args.analysis
@@ -396,7 +390,7 @@ def main():
         ontology,
         True if analysis_script_consortia and analysis_script_consortia != "" else False,
         project_id=project_id,
-        db_kwargs=db_kwargs,
+        api_config=api_config,
     )
     if not pfb_export:
         print("One or more problems occurred during the initialization of the PFBExporter class")

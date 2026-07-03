@@ -16,7 +16,6 @@ gitpython = "^3.1.44"
 
 dictionaryutils = { git = "https://github.com/chicagopcdc/dictionaryutils.git", rev = "2026.05" }
 pypfb = { git = "https://github.com/chicagopcdc/pypfb.git", rev = "0.6.0" }
-psycopg2-binary = "^2.9.12"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
