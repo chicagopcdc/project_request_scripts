@@ -1,5 +1,6 @@
 """Load export whitelist/blacklist from amanuensis project_datapoints API."""
 
+import logging
 import os
 import sys
 import types
@@ -7,6 +8,8 @@ from importlib import import_module
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 import requests
+
+logger = logging.getLogger(__name__)
 
 
 def load_config_module(config_file_path: str):
@@ -40,8 +43,7 @@ def _auth_headers(token: str) -> Dict[str, str]:
 def _request_verify():
     """SSL verification for amanuensis API requests.
 
-    Set AMANUENSIS_INSECURE_SSL=1 for local dev when the portal uses a
-    self-signed cert without a localhost SAN (common with gen3-helm).
+    Set AMANUENSIS_INSECURE_SSL=1 for local dev when the portal uses aself-signed cert 
     """
     if os.environ.get("AMANUENSIS_INSECURE_SSL", "").lower() in ("1", "true", "yes"):
         return False
@@ -112,6 +114,13 @@ def load_config(project_id: int, api_config: Dict[str, Any], fallback_module):
     try:
         rows = fetch_project_datapoints(api_config, project_id)
     except Exception as exc:
+        logger.warning(
+            "Falling back to local config; could not fetch project_datapoints "
+            "for project_id=%s: %s",
+            project_id,
+            exc,
+            exc_info=True,
+        )
         return fallback_module, (
             f"Config source: local file (could not fetch from amanuensis API: {exc})"
         )
@@ -129,6 +138,14 @@ def load_config(project_id: int, api_config: Dict[str, Any], fallback_module):
             white_list[term] = list(value_list)
         elif dtype == "b":
             black_list[term] = list(value_list)
+        else:
+            logger.warning(
+                "Skipping project_datapoint with unexpected type=%r for term=%r "
+                "(project_id=%s); expected 'w' or 'b'",
+                dtype,
+                term,
+                project_id,
+            )
 
     config = types.SimpleNamespace(
         white_list=white_list,
