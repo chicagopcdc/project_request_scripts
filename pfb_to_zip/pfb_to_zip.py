@@ -1,6 +1,4 @@
 import argparse
-import sys
-from importlib import import_module
 from pathlib import Path
 import os
 import re
@@ -18,6 +16,8 @@ from pfb.exporters import tsv
 from dictionaryutils.utils import node_values_to_codes
 from pfb.writer import PFBWriter
 
+from db_config import get_api_config, load_config, load_config_module
+
 
 def to_folder_name(value: str) -> str:
     value = value.lower()
@@ -31,7 +31,17 @@ class Config():
         self.reader = None
 
 class PFBExporter:
-    def __init__(self, pfb_file_path:str, tmp_folder:str, output_path:str, config_file_path:str, ontology:str=None, extra_analysis:str=None) -> None:
+    def __init__(
+        self,
+        pfb_file_path: str,
+        tmp_folder: str,
+        output_path: str,
+        config_file_path: str,
+        ontology: str = None,
+        extra_analysis: str = None,
+        project_id: int = None,
+        api_config: dict = None,
+    ) -> None:
         self.pfb_file_path = pfb_file_path
         self.tmp_folder = tmp_folder if tmp_folder else "./tmp"
         self.output_path = output_path if output_path else "./"
@@ -39,11 +49,14 @@ class PFBExporter:
         self.analysis_path = extra_analysis
         self.zip_file_output_path = None
 
-        # Retrieve config file module
-        path, file = config_file_path.rsplit('/', 1)
-        file = file[:-3]
-        sys.path.append(path)
-        self.config = import_module(file)
+        fallback_config = load_config_module(config_file_path)
+        if project_id is not None:
+            self.config, self.config_source = load_config(
+                project_id, api_config or get_api_config(), fallback_config
+            )
+        else:
+            self.config = fallback_config
+            self.config_source = "Config source: local file (--project-id not set)"
 
         self.data_dictionary = None
         if self.ontology and self.ontology == "ncit":
@@ -448,7 +461,10 @@ def main():
     # Example for diff: python3 pfb_to_zip.py -i ../new_data.avro -o ../outputs/ -c ./config.py -d ../old_data.avro
 
     parser = argparse.ArgumentParser(description="Build ZIP bundle for data delivery after project request has been approved")
-    parser.add_argument('-c', '--config', help='The config file')
+    parser.add_argument('-c', '--config', help='Fallback config file (exclude_files, data_dictionary, and white/black lists if API unavailable)')
+    parser.add_argument('-p', '--project-id', type=int, help='Load white_list and black_list from amanuensis project_datapoints for this project')
+    parser.add_argument('--amanuensis-url', default=os.environ.get('AMANUENSIS_URL', 'https://localhost'), help='Portal base URL (default: AMANUENSIS_URL or https://localhost)')
+    parser.add_argument('--access-token', default=os.environ.get('AMANUENSIS_ACCESS_TOKEN'), help='Bearer token with amanuensis access (default: AMANUENSIS_ACCESS_TOKEN env var)')
     parser.add_argument('-i', '--input', help='Input PFB file path')
     parser.add_argument('-o', '--output', help='Output ZIP directory')
     parser.add_argument('-t', '--terminology', help='The ontology you want to transform GEN3 values to.')
@@ -460,6 +476,11 @@ def main():
         input_path = args.input
         output_path = args.output
         config_file = args.config
+        project_id = args.project_id
+        api_config = get_api_config(
+            base_url=args.amanuensis_url,
+            token=args.access_token,
+        )
         ontology = args.terminology
         analysis_script_consortia = args.analysis
     except argparse.ArgumentError as err:
@@ -473,7 +494,16 @@ def main():
         input_path = diff_output
 
     tmp_folder = "./tmp"
-    pfb_export = PFBExporter(input_path, tmp_folder, output_path, config_file, ontology, True if analysis_script_consortia and analysis_script_consortia != "" else False)
+    pfb_export = PFBExporter(
+        input_path,
+        tmp_folder,
+        output_path,
+        config_file,
+        ontology,
+        True if analysis_script_consortia and analysis_script_consortia != "" else False,
+        project_id=project_id,
+        api_config=api_config,
+    )
     if not pfb_export:
         print("One or more problems occurred during the initialization of the PFBExporter class")
         exit()
@@ -487,6 +517,7 @@ def main():
     pfb_export.add_external_references_material()
     pfb_export.zip()
     pfb_export.clean_up()
+    print(pfb_export.config_source)
 
 
 if __name__ == "__main__":
